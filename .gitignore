@@ -1,3 +1,5 @@
 /node_modules
 /public/images/*.png
 /public/images/*.jpg 
+/public/images/*.bmp
+/public/images/*.jpeg
