@@ -29,7 +29,7 @@ const register = async (req, res) => {
 
     } catch (error) {
         console.error(error); // 에러 콘솔 출력
-        res.render('register', { error: 'An error occurred during registration. Please try again.' });
+        // res.render('register', { error: 'An error occurred during registration. Please try again.' });
     }
 }
 
@@ -48,7 +48,7 @@ const login = async(req, res)=>{
 
         const userData = await User.findOne({email:email})
         if(userData){
-            const passwrodMatch = bcrypt.compare(password, userData.password)
+            const passwrodMatch = await bcrypt.compare(password, userData.password)
             if(passwrodMatch){
                 req.session.user = userData
                 res.redirect('/dashboard')
