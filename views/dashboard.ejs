@@ -1,57 +1,75 @@
 <%- include('layouts/header.ejs') %>
 
-        <h2 class="mb-4">Hi, <%= user.name %>
-        </h2>
+    <h2 class="mb-4">Hi, <%= user.name %>
+    </h2>
 
-        <div class="row">
-                <div class="col-md-3">
-                        <ul class="list-group">
-                                <% if (users.length>0) {
-                                        for(let i =0; i <users.length; i++){ %>
-                                                <li
-                                                        class="list-group-item list-group-item-dark cursor-pointer user-list">
-                                                        <img src="<%= 'http://127.0.0.1:3000/'+users[i]['image']%>"
-                                                                alt="" width="50px" height="50px">
-                                                        <%= users[i]['name'] %>
-                                                </li>
-                                                <% } } %>
-                        </ul>
-                </div>
-                <div class="col-md-9">
+    <div class="row">
+        <div class="col-md-4">
+            <ul class="list-group">
+                <% if (users.length>0) {
+                    for(let i =0; i <users.length; i++){ %>
+                        <li class="list-group-item list-group-item-dark cursor-pointer user-list">
+                            <img src="<%= 'http://127.0.0.1:3000/'+users[i]['image']%>" alt="" width="50px"
+                                height="50px">
+                            <%= users[i]['name'] %>
+                                <% if(users[i]['is_online']==1){ %>
+                                    <sup class='online-status' id='<%=users[i][' _id']%>-status'>Online</sup>
+                                    <% } else{%>
+                                        <sup class="offline-status" id="<%=users[i]['_id']%>-status">Offline</sup>
+                                        <%}%>
+                                            <% } } %>
+                        </li>
 
-                        <h3 class="start-head"> Click to Start the Chat </h3>
-                        <div class="chat-section">
 
-                                <div id="chat-container">
-                                </div>
-
-                                <form action="" id="chat-form">
-                                        <input type="text" name="message" placeholder="Enter Message" id="message"
-                                                class="border" required>
-                                        <input type="submit" value="Send Message" class="btn btn-primary">
-                                </form>
-
-                        </div>
-
-                </div>
+            </ul>
         </div>
-        <script>
-                
-                var sender_id = '<%= user._id %>'
-                var socket = io('/user-namespace', {
-                        auth:{
-                                token:'<%= user._id %>'
-                        }
-                })
+        <div class="col-md-8">
 
+            <h3 class="start-head"> Click to Start the Chat </h3>
+            <div class="chat-section">
 
-                $(document).ready(function () {
+                <div id="chat-container">
+                </div>
 
-                        $('.user-list').click(function () {
-                                $('.start-head').hide();
-                                $('.chat-section').show();
-                        });
-                });
-        </script>
+                <form action="" id="chat-form">
+                    <input type="text" name="message" placeholder="Enter Message" id="message" class="border" required>
+                    <input type="submit" value="Send Message" class="btn btn-primary">
+                </form>
 
-        <%- include('layouts/footer.ejs') %>
+            </div>
+
+        </div>
+    </div>
+    <script>
+
+        var sender_id = '<%= user._id %>'
+        var socket = io('/user-namespace', {
+            auth: {
+                token: '<%= user._id %>'
+            }
+        })
+
+        $(document).ready(function () {
+
+            $('.user-list').click(function () {
+                $('.start-head').hide();
+                $('.chat-section').show();
+            });
+        });
+
+        // update user online status
+        socket.on('getOnlineUser', function (data) {
+            $('#' + data.user_id + '-status').text('Online')
+            $('#' + data.user_id + '-status').removeClass('offline-status')
+            $('#' + data.user_id + '-status').addClass('online-status')
+        })
+
+        // update user offline status
+        socket.on('getOfflineUser', function (data) {
+            $('#' + data.user_id + '-status').text('Offline')
+            $('#' + data.user_id + '-status').addClass('offline-status')
+            $('#' + data.user_id + '-status').removeClass('online-status')
+        })
+    </script>
+
+    <%- include('layouts/footer.ejs') %>
