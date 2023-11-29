@@ -60,8 +60,14 @@ usp.on('connection', async function (socket) {
     })
 
     //delete chats
-    socket.on('chatDeleted', function(id){
+    socket.on('chatDeleted', function (id) {
         socket.broadcast.emit('chatMessageDeleted', id)
+
+    })
+
+    //update chats
+    socket.on('chatUpdated', function (data) {
+        socket.broadcast.emit('chatMessageUpdated', data)
 
     })
 
