@@ -52,6 +52,7 @@ const login = async (req, res) => {
             const passwrodMatch = await bcrypt.compare(password, userData.password)
             if (passwrodMatch) {
                 req.session.user = userData
+                res.cookie(`user`,JSON.stringify(userData))
                 res.redirect('/dashboard')
             }
             else {
@@ -68,6 +69,8 @@ const login = async (req, res) => {
 
 const logout = async (req, res) => {
     try {
+
+        res.clearCookie('user')
         req.session.destroy()
         res.redirect('/')
 
