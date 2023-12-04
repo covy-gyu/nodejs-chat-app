@@ -134,7 +134,9 @@ const loadGroups = async (req, res) => {
 
     try {
 
-        res.render('group');
+        const groups = await Group.find({ creator_id: req.session.user._id })
+        console.log(groups)
+        res.render('group', { groups: groups });
 
     } catch (error) {
         console.log(error.message)
@@ -153,7 +155,9 @@ const createGroup = async (req, res) => {
         })
         await group.save()
 
-        res.render('group', { message: req.body.name + ' Group created Successfully!' });
+        const groups = await Group.find({ creator_id: req.session.user._id })
+
+        res.render('group', { message: req.body.name + ' Group created Successfully!', groups: groups });
 
     } catch (error) {
         console.log(error.message)
