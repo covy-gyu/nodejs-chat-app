@@ -28,7 +28,7 @@ function getCookie(name) {
 }
 
 var userData = JSON.parse(getCookie('user'))
-console.log(userData)
+// console.log(userData)
 var sender_id = userData._id
 var receiver_id;
 var socket = io('/user-namespace', {
@@ -265,4 +265,30 @@ $('.addMember').click(function () {
         }
     })
 
+})
+
+//add member form submit code
+
+$('#add-member-form').submit(function (event) {
+    event.preventDefault()
+
+    var formData = $(this).serialize()
+
+    $.ajax({
+        url: "/add-members",
+        type: "post",
+        data: formData,
+        success: function (res) {
+            if (res.success) {
+                $('#memberModal').modal('hide')
+                $('#add-member-form')[0].reset()
+                alert(res.msg)
+            } else {
+                $('#add-member-error').text(res.msg)
+                setTimeout(() => {
+                    $('#add-member-error').text('')
+                }, 3000);
+            }
+        }
+    })
 })

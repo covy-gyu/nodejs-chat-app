@@ -1,6 +1,7 @@
 const User = require('../models/userModel')
 const Chat = require('../models/chatModel')
 const Group = require('../models/groupModel')
+const Member = require('../models/memberModel')
 const bcrypt = require('bcrypt')
 
 const registerLoad = async (req, res) => {
@@ -136,7 +137,7 @@ const loadGroups = async (req, res) => {
     try {
 
         const groups = await Group.find({ creator_id: req.session.user._id })
-        console.log(groups)
+        // console.log(groups)
         res.render('group', { groups: groups });
 
     } catch (error) {
@@ -177,6 +178,41 @@ const getMembers = async (req, res) => {
     }
 }
 
+const addMembers = async (req, res) => {
+    try {
+        if (!req.body.members) {
+            res.status(200).send({ success: false, msg: 'Please select any one Member' })
+        }
+        else if (req.body.members.length > parseInt(req.body.limit)) {
+            res.status(200).send({ success: false, msg: 'You can not select more than ' + req.body.limit + ' Members' })
+        }
+        else {
+
+            await Member.deleteMany({ group_id: req.body.group_id })
+
+            var data = []
+
+            const members = req.body.members
+
+            for (let i = 0; i < members.length; i++) {
+
+                data.push({
+                    group_id: req.body.group_id,
+                    user_id: members[i]
+                })
+            }
+
+            await Member.insertMany(data)
+
+            res.status(200).send({ success: true, msg: 'Members added Successfully!' })
+        }
+
+
+    } catch (error) {
+        res.status(400).send({ success: false, msg: error.message })
+    }
+}
+
 module.exports = {
     registerLoad,
     register,
@@ -190,4 +226,5 @@ module.exports = {
     loadGroups,
     createGroup,
     getMembers,
+    addMembers,
 }
