@@ -12165,3 +12165,8 @@ a[data-toggle="collapse"] {
     color: blue;
 }
   
+.addMemberTable{
+    overflow-y: scroll;
+    height: 100px;
+    width: 100%;
+}
