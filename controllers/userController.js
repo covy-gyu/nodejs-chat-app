@@ -3,6 +3,7 @@ const Chat = require('../models/chatModel')
 const Group = require('../models/groupModel')
 const Member = require('../models/memberModel')
 const bcrypt = require('bcrypt')
+const mongoose = require("mongoose")
 
 const registerLoad = async (req, res) => {
 
@@ -169,7 +170,38 @@ const createGroup = async (req, res) => {
 const getMembers = async (req, res) => {
     try {
 
-        var users = await User.find({ _id: { $nin: [req.session.user._id] } })
+        // var users = await User.find({ _id: { $nin: [req.session.user._id] } })
+        var users = await User.aggregate([
+            {
+                $lookup: {
+                    from: "members",
+                    localField: "_id",
+                    foreignField: "user_id",
+                    pipeline: [
+                        {
+                            $match: {
+                                $expr: {
+                                    $and: [
+                                        {
+                                            $eq: ["$group_id", new mongoose.Types.ObjectId(req.body.group_id)]
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    ],
+                    as: "member"
+                }
+            }, {
+                $match: {
+                    "_id":
+                    {
+                        $nin: [new mongoose.Types.ObjectId(req.session.user._id)]
+                    }
+                }
+            }
+
+        ])
 
         res.status(200).send({ success: true, data: users })
 

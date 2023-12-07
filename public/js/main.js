@@ -242,15 +242,19 @@ $('.addMember').click(function () {
         type: 'POST',
         data: { group_id: id },
         success: function (res) {
+            console.log(res)
             if (res.success == true) {
                 let users = res.data
                 let html = ''
 
                 for (let i = 0; i < users.length; i++) {
+                    console.log(users[i]['member'])
+                    let isMemberOfGroup = users[i]['member'].length > 0
+
                     html += `
                         <tr>
                             <td>
-                                <input type="checkbox" name="members[]" value="`+ users[i]['_id'] + `"/>
+                                <input type="checkbox" `+ (isMemberOfGroup ? 'checked' : "") + ` name="members[]" value="` + users[i]['_id'] + `"/>
                             </td>
                             <td>`+ users[i]['name'] + `</td>
                         </tr>
@@ -260,11 +264,11 @@ $('.addMember').click(function () {
 
             }
             else {
+                console.log(res)
                 alert(res.msg)
             }
         }
     })
-
 })
 
 //add member form submit code
