@@ -326,3 +326,49 @@ $("#updateChatGroupForm").submit(function (e) {
         }
     })
 })
+
+//---------------------- delete chat group
+$('.deleteGroup').click(function () {
+
+    $('#delete_group_id').val($(this).attr('data-id'))
+    $('#delete_group_name').text($(this).attr('data-name'))
+})
+
+$('#deleteChatGroupForm').submit(function (e) {
+    e.preventDefault()
+
+    var formData = $(this).serialize()
+
+    $.ajax({
+        url: "/delete-chat-group",
+        type: "post",
+        data: formData,
+        success: function (res) {
+            alert(res.msg)
+            if (res.success) {
+                location.reload()
+            }
+
+        }
+    })
+})
+
+//----- Copy sharable link
+$('.copy').click(function () {
+
+    $(this).prepend('<span class="copied_text">Copied</span>')
+
+    var group_id = $(this).attr('data-id')
+    var url = window.location.host + '/share-group/' + group_id
+
+    var temp = $("<input>")
+    $("body").append(temp)
+    temp.val(url).select()
+    document.execCommand("copy")
+
+    temp.remove()
+
+    setTimeout(() => {
+        $('.copied_text').remove()
+    }, 2000)
+})
