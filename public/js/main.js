@@ -372,3 +372,28 @@ $('.copy').click(function () {
         $('.copied_text').remove()
     }, 2000)
 })
+
+//join group script
+
+$('.join-now').click(function () {
+    $(this).text('Wait...')
+    $(this).attr('disabled', 'disabled')
+
+    var group_id = $(this).attr('data-id')
+
+    $.ajax({
+        url: "/join-group",
+        type: "post",
+        data: { group_id: group_id },
+        success: function (res) {
+            alert(res.msg)
+            if (res.success) {
+                location.reload()
+            }
+            else {
+                $(this).text('Join Now')
+                $(this).removeAttr('disabled')
+            }
+        }
+    })
+})
