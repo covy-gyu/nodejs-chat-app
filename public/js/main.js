@@ -31,6 +31,7 @@ var userData = JSON.parse(getCookie('user'))
 // console.log(userData)
 var sender_id = userData._id
 var receiver_id;
+var global_group_id;
 var socket = io('/user-namespace', {
     auth: {
         token: userData._id
@@ -154,6 +155,12 @@ socket.on('loadChats', function (data) {
 function scrollChat() {
     $('#chat-container').animate({
         scrollTop: $('#chat-container').offset().top + $('#chat-container')[0].scrollHeight
+    }, 0)
+}
+
+function scrollChat() {
+    $('#group-chat-container').animate({
+        scrollTop: $('#group-chat-container').offset().top + $('#group-chat-container')[0].scrollHeight
     }, 0)
 }
 
@@ -403,4 +410,59 @@ $('.join-now').click(function () {
 $('.group-list').click(function () {
     $('.group-start-head').hide()
     $('.group-chat-section').show()
+
+    global_group_id = $(this).attr('data-id')
+})
+
+$('#group-chat-form').submit(function (event) {
+    event.preventDefault()
+
+    var message = $('#group-message').val()
+
+    $.ajax({
+        url: '/group-chat-save',
+        type: 'POST',
+        data: { sender_id: sender_id, group_id: global_group_id, message: message },
+        success: function (response) {
+            if (response.success) {
+                $('#group-message').val('')
+                let message = response.chat.message
+                let html = `
+                        <div class="current-user-chat" id='`+ response.chat._id + `'>
+                            <h5>
+                                <span>`+ message + `</span>
+                            </h5>
+                        </div>
+                        `
+                $('#group-chat-container').append(html)
+                socket.emit('newGroupChat', response.chat)
+
+                scrollChat()
+
+            }
+            else {
+                alert(data.msg)
+            }
+        }
+    })
+})
+
+socket.on('loadNewGroupChat', function (data) {
+
+    if (global_group_id == data.group_id) {
+
+        let html = `
+        <div class="distance-user-chat" id='`+ data._id + `'>
+            <h5>
+                <span>`+ data.message + `</span>
+            </h5>
+        </div>
+        `
+        $('#group-chat-container').append(html)
+
+        scrollChat()//scrolling data
+
+    }
+
+
 })

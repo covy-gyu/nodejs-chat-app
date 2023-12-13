@@ -71,6 +71,12 @@ usp.on('connection', async function (socket) {
 
     })
 
+    //new group chats added
+    socket.on('newGroupChat', function (data) {
+        socket.broadcast.emit('loadNewGroupChat', data) //broadcast group chat object
+
+    })
+
 })
 
 http.listen(3000, function () {
