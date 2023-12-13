@@ -154,13 +154,7 @@ socket.on('loadChats', function (data) {
 
 function scrollChat() {
     $('#chat-container').animate({
-        scrollTop: $('#chat-container').offset().top + $('#chat-container')[0].scrollHeight
-    }, 0)
-}
-
-function scrollChat() {
-    $('#group-chat-container').animate({
-        scrollTop: $('#group-chat-container').offset().top + $('#group-chat-container')[0].scrollHeight
+        scrollTop: $('#chat-container').prop('scrollHeight')
     }, 0)
 }
 
@@ -407,11 +401,20 @@ $('.join-now').click(function () {
 
 //------------------------------- Group Chatting Script ------------------------------------
 
+function scrollGroupChat() {
+    $('#group-chat-container').animate({
+        scrollTop: $('#group-chat-container').prop('scrollHeight')
+    }, 0)
+}
+
+
 $('.group-list').click(function () {
     $('.group-start-head').hide()
     $('.group-chat-section').show()
 
     global_group_id = $(this).attr('data-id')
+
+    loadGroupChats()
 })
 
 $('#group-chat-form').submit(function (event) {
@@ -437,7 +440,7 @@ $('#group-chat-form').submit(function (event) {
                 $('#group-chat-container').append(html)
                 socket.emit('newGroupChat', response.chat)
 
-                scrollChat()
+                scrollGroupChat()
 
             }
             else {
@@ -460,9 +463,45 @@ socket.on('loadNewGroupChat', function (data) {
         `
         $('#group-chat-container').append(html)
 
-        scrollChat()//scrolling data
+        scrollGroupChat()//scrolling data
 
     }
 
-
 })
+
+function loadGroupChats() {
+    $.ajax({
+        url: "/load-group-chats",
+        type: 'post',
+        data: { group_id: global_group_id },
+        success: function (res) {
+            if (res.success) {
+                var chats = res.chats;
+                var html = ''
+
+                for (let i = 0; i < chats.length; i++) {
+                    let className = 'distance-user-chat'
+
+                    if (chats[i]['sender_id'] == sender_id) {
+                        className = 'current-user-chat'
+                    }
+
+                    html += `
+                    <div class = '`+ className + `' id=` + chats[i]['_id'] + `>
+                        <h5>
+                            <span>`+ chats[i]['message'] + `</span>
+                        </h5>
+                    </div>
+                    `
+                }
+                $('#group-chat-container').html(html)
+
+                scrollGroupChat()
+
+            }
+            else {
+                alert(res.msg)
+            }
+        }
+    })
+}
