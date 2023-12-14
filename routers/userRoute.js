@@ -65,6 +65,7 @@ user_route.get('/group-chat', auth.isLogin, userController.groupChats)
 user_route.post('/group-chat-save', userController.saveGroupChat)
 user_route.post('/load-group-chats', userController.loadGroupChats)
 user_route.post('/delete-group-chat', userController.deleteGroupChat)
+user_route.post('/update-group-chat', userController.updateGroupChat)
 
 
 

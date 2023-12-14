@@ -82,6 +82,11 @@ usp.on('connection', async function (socket) {
 
     })
 
+    socket.on('groupChatUpdated', function (data) {
+        socket.broadcast.emit('groupChatMessageUpdated', data) //broadcast chat updated msg
+
+    })
+
 })
 
 http.listen(3000, function () {
