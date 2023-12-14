@@ -434,6 +434,7 @@ $('#group-chat-form').submit(function (event) {
                         <div class="current-user-chat" id='`+ response.chat._id + `'>
                             <h5>
                                 <span>`+ message + `</span>
+                                <i class="fa fa-trash deleteGroupChat" aria-hidden="true" data-id="` + response.chat._id + `" data-toggle="modal" data-target="#deleteGroupChatModal"></i>
                             </h5>
                         </div>
                         `
@@ -489,7 +490,13 @@ function loadGroupChats() {
                     html += `
                     <div class = '`+ className + `' id=` + chats[i]['_id'] + `>
                         <h5>
-                            <span>`+ chats[i]['message'] + `</span>
+                            <span>`+ chats[i]['message'] + `</span>`
+                    if (chats[i]['sender_id'] == sender_id) {
+                        html += `<i class="fa fa-trash deleteGroupChat" aria-hidden="true" data-id="` + chats[i]['_id'] + `" data-toggle="modal" data-target="#deleteGroupChatModal"></i>`
+                    }
+
+                    html += `
+                    
                         </h5>
                     </div>
                     `
@@ -505,3 +512,39 @@ function loadGroupChats() {
         }
     })
 }
+
+$(document).on('click', '.deleteGroupChat', function () {
+
+    var msg = $(this).parent().find('span').text()
+
+    $('#delete-group-message').text(msg)
+    $('#delete-group-message-id').val($(this).attr('data-id'))
+
+})
+
+$('#delete-group-chat-form').submit(function (e) {
+    e.preventDefault()
+    var id = $('#delete-group-message-id').val()
+
+    $.ajax({
+        url: '/delete-group-chat',
+        type: 'post',
+        data: { id: id },
+        success: function (res) {
+            if (res.success) {
+                // $('#' + id).remove()
+                $('#deleteGroupChatModal').modal('hide')
+                socket.emit('groupChatDeleted', id)
+            } else {
+                alert(res.msg)
+            }
+        }
+    })
+})
+
+//listen delete chat id using socket
+
+socket.on('groupChatMessageDeleted', function (id) {
+    $('#' + id).remove()
+
+})

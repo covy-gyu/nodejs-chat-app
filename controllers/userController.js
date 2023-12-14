@@ -383,6 +383,17 @@ const loadGroupChats = async (req, res) => {
     }
 }
 
+const deleteGroupChat = async (req, res) => {
+    try {
+
+        await GroupChat.deleteOne({ _id: req.body.id })
+        res.send({ success: true, msg: 'Chat Deleted' })
+
+    } catch (error) {
+        res.send({ success: false, msg: error.message })
+    }
+}
+
 module.exports = {
     registerLoad,
     register,
@@ -404,4 +415,5 @@ module.exports = {
     groupChats,
     saveGroupChat,
     loadGroupChats,
+    deleteGroupChat,
 }
