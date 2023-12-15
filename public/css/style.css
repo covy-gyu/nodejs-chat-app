@@ -12187,3 +12187,15 @@ a[data-toggle="collapse"] {
 .group-chat-section {
     display: none;
 }
+
+/* group chat message user css */
+
+.user-data{
+    font-size: 12px;
+}
+.user-chat-image{
+    width: 25px;
+    height: 25px;
+    border-radius: 100px;
+    border:1px solid red;
+}
